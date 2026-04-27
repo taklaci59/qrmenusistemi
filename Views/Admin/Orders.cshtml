@@ -1,0 +1,87 @@
+@model IEnumerable<qrmenusistemiuygulama18.Models.Order>
+@{
+    ViewData["Title"] = "Sipariş Geçmişi";
+}
+
+<div class="card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold m-0">Tüm Siparişler</h3>
+        <span class="badge bg-secondary p-2 px-3">Toplam @Model.Count() Kayıt</span>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Sipariş No</th>
+                    <th>Tarih / Saat</th>
+                    <th>Masa</th>
+                    <th>Tutar</th>
+                    <th>Durum</th>
+                    <th class="text-end">Detay</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="fw-bold">#@item.Id</td>
+                        <td>
+                            @item.OrderDate.ToShortDateString() <br>
+                            <small class="text-muted">@item.OrderDate.ToShortTimeString()</small>
+                        </td>
+                        <td><span class="badge bg-dark">Masa @item.Table?.TableNumber</span></td>
+                        <td class="fw-bold text-dark">@item.TotalPrice.ToString("C2")</td>
+                        <td>
+                            @switch (item.Status)
+                            {
+                                case qrmenusistemiuygulama18.Models.Enums.OrderStatus.New:
+                                    <span class="badge bg-info text-dark">Yeni</span>
+                                    break;
+                                case qrmenusistemiuygulama18.Models.Enums.OrderStatus.Preparing:
+                                    <span class="badge bg-warning text-dark">Hazırlanıyor</span>
+                                    break;
+                                case qrmenusistemiuygulama18.Models.Enums.OrderStatus.Served:
+                                    <span class="badge bg-success">Servis Edildi</span>
+                                    break;
+                                case qrmenusistemiuygulama18.Models.Enums.OrderStatus.Cancelled:
+                                    <span class="badge bg-danger">İptal Edildi</span>
+                                    break;
+                            }
+                        </td>
+                        <td class="text-end">
+                            <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#items-@item.Id">
+                                <i class="bi bi-list-ul"></i> Ürünler
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="collapse" id="items-@item.Id">
+                        <td colspan="6" class="bg-light p-3">
+                            <div class="small">
+                                <h6 class="fw-bold mb-2">Sipariş Kalemleri:</h6>
+                                <div class="row row-cols-2 row-cols-md-4 g-2">
+                                    @foreach (var oi in item.OrderItems)
+                                    {
+                                        <div class="col">
+                                            <div class="bg-white p-2 rounded border shadow-sm">
+                                                <span class="fw-bold">@oi.Quantity x</span> @oi.Product?.Name <br>
+                                                <small class="text-muted">@oi.UnitPrice.ToString("C2") / adet</small>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <p class="text-muted">Henüz hiç sipariş kaydı bulunmuyor.</p>
+        </div>
+    }
+</div>

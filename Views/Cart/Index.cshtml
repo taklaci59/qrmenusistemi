@@ -1,0 +1,81 @@
+@model IEnumerable<qrmenusistemiuygulama18.Models.CartItem>
+@{
+    ViewData["Title"] = "Sepetim";
+    decimal total = Model.Sum(i => i.TotalPrice);
+}
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card p-4 mb-4">
+            <h3 class="fw-bold mb-4">Sipariş Detayları</h3>
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-cart-x display-1 text-muted"></i>
+                    <p class="mt-3">Sepetiniz henüz boş.</p>
+                    <a asp-controller="Home" asp-action="Menu" class="btn btn-primary">Hemen Menüye Dön</a>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Ürün</th>
+                                <th>Adet</th>
+                                <th>Fiyat</th>
+                                <th>Toplam</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "https://placehold.co/100" : item.ImageUrl)" class="rounded-3 me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                            <span class="fw-600">@item.ProductName</span>
+                                        </div>
+                                    </td>
+                                    <td>@item.Quantity</td>
+                                    <td>@item.Price.ToString("C2")</td>
+                                    <td class="fw-bold">@item.TotalPrice.ToString("C2")</td>
+                                    <td>
+                                        <form asp-action="Remove" method="post">
+                                            <input type="hidden" name="productId" value="@item.ProductId" />
+                                            <button type="submit" class="btn btn-link text-danger p-0">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+    
+    @if (Model.Any())
+    {
+        <div class="col-lg-4">
+            <div class="card p-4">
+                <h4 class="fw-bold mb-4">Özet</h4>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Masa Numarası:</span>
+                    <span class="fw-bold">@ViewBag.TableNumber</span>
+                </div>
+                <div class="d-flex justify-content-between mb-4 border-top pt-3 mt-3">
+                    <span class="fs-5">Toplam Tutar:</span>
+                    <span class="fs-4 fw-black text-dark">@total.ToString("C2")</span>
+                </div>
+                <form asp-action="Checkout" method="post">
+                    <button type="submit" class="btn btn-primary w-100 py-3 fs-5">Siparişi Tamamla</button>
+                </form>
+            </div>
+        </div>
+    }
+</div>

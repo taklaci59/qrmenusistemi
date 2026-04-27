@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Kıvançlı Lezzetler QR Menü</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #f7d117; /* Banana Yellow */
+            --secondary-color: #2b2d42;
+            --accent-color: #8d99ae;
+            --bg-light: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--secondary-color);
+        }
+
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+        }
+
+        .navbar-brand span {
+            color: var(--primary-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            color: var(--secondary-color);
+            font-weight: 600;
+            padding: 0.6rem 1.5rem;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #e5c015;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(247, 209, 23, 0.3);
+        }
+
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+
+        .footer {
+            background-color: white;
+            padding: 2rem 0;
+            margin-top: 5rem;
+            border-top: 1px solid #eee;
+        }
+
+        /* Admin Specific */
+        .admin-sidebar {
+            min-height: 100vh;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 2rem 1rem;
+        }
+
+        .admin-nav-link {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            display: block;
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .admin-nav-link:hover, .admin-nav-link.active {
+            background-color: rgba(255,255,255,0.1);
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    @if (!User.Identity!.IsAuthenticated || !Context.Request.Path.Value!.StartsWith("/Admin"))
+    {
+        <header>
+            <nav class="navbar navbar-expand-lg sticky-top">
+                <div class="container">
+                    <a class="navbar-brand" href="/">Kıvançlı<span>Lezzetler.</span></a>
+                    <div class="ms-auto d-flex align-items-center">
+                        @if (ViewBag.TableNumber != null)
+                        {
+                            <span class="badge bg-dark me-3 p-2">Masa @ViewBag.TableNumber</span>
+                            <a class="btn btn-outline-dark position-relative" asp-controller="Cart" asp-action="Index" asp-route-table="@ViewBag.TableNumber">
+                                <i class="bi bi-basket3"></i>
+                                <span id="cart-count"></span>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <main role="main" class="pb-3">
+            <div class="container mt-4">
+                @RenderBody()
+            </div>
+        </main>
+
+        <footer class="footer text-center">
+            <div class="container">
+                <p class="mb-0 text-muted">&copy; 2026 Kıvançlı Lezzetler Dijital Menü. Bütün hakları saklıdır.</p>
+            </div>
+        </footer>
+    }
+    else
+    {
+        <div class="container-fluid">
+            <div class="row">
+                <nav class="col-md-2 d-none d-md-block admin-sidebar">
+                    <div class="mb-5 px-3">
+                        <h4 class="fw-bold">Admin<span>Panel</span></h4>
+                    </div>
+                    <a class="admin-nav-link @(ViewContext.RouteData.Values["action"]!.ToString() == "Dashboard" ? "active" : "")" asp-controller="Admin" asp-action="Dashboard">
+                        <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                    </a>
+                    <a class="admin-nav-link @(ViewContext.RouteData.Values["action"]!.ToString() == "Products" ? "active" : "")" asp-controller="Admin" asp-action="Products">
+                        <i class="bi bi-box-seam me-2"></i> Ürünler
+                    </a>
+                    <a class="admin-nav-link @(ViewContext.RouteData.Values["action"]!.ToString() == "Categories" ? "active" : "")" asp-controller="Admin" asp-action="Categories">
+                        <i class="bi bi-tags me-2"></i> Kategoriler
+                    </a>
+                    <a class="admin-nav-link @(ViewContext.RouteData.Values["action"]!.ToString() == "Orders" ? "active" : "")" asp-controller="Admin" asp-action="Orders">
+                        <i class="bi bi-receipt me-2"></i> Tüm Siparişler
+                    </a>
+                    <hr class="my-4 text-white-50">
+                    <a class="admin-nav-link" asp-controller="Home" asp-action="Menu" asp-route-table="1">
+                        <i class="bi bi-eye me-2"></i> Menü Görüntüle
+                    </a>
+                    <a class="admin-nav-link text-danger mt-5" asp-controller="Account" asp-action="Logout">
+                        <i class="bi bi-box-arrow-right me-2"></i> Çıkış Yap
+                    </a>
+                </nav>
+                <main class="col-md-10 ms-sm-auto px-md-4 py-4">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
+    }
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

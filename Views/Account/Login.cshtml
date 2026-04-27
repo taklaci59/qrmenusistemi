@@ -1,0 +1,41 @@
+@{
+    ViewData["Title"] = "Admin Girişi";
+    Layout = null; // Login sayfası için sade bir görünüm
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <title>Giriş - Kıvançlı Lezzetler Admin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <style>
+        body { background-color: #f8f9fa; font-family: sans-serif; display: flex; align-items: center; min-height: 100vh; }
+        .login-card { width: 400px; margin: auto; padding: 2rem; border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .btn-banana { background-color: #f7d117; color: #2b2d42; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="login-card bg-white">
+        <h3 class="fw-bold mb-4 text-center">Admin Girişi</h3>
+        <form asp-action="Login" method="post">
+            <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+            <div class="mb-3">
+                <label class="form-label">Kullanıcı Adı</label>
+                <input type="text" name="username" class="form-control" required />
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Şifre</label>
+                <input type="password" name="password" class="form-control" required />
+            </div>
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger py-2 small">
+                    @Html.ValidationSummary(true)
+                </div>
+            }
+            <button type="submit" class="btn btn-banana w-100 py-2">Giriş Yap</button>
+        </form>
+    </div>
+</body>
+</html>
